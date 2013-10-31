@@ -127,7 +127,7 @@
 
         // create items
         var self = this;
-        this._parent.children().each(function () {
+        this._parent.children().each(function (e) {
             var item = $('<div>')
                 .addClass(self.LIST_ITEM_CLASS)
                 .appendTo(self._list)
@@ -266,6 +266,8 @@
 			for(var i=start;i<end;i++){
 				var thisItem = $(item.parent().find('.lbjs-item')[i]);
 				var originalItem = $(this._parent.children().get(i));
+				if(thisItem.css('display') == 'none')
+					continue;
 				if(thisItem.attr('selected')){
 					thisItem.removeAttr('selected');
 					var removeIndex = parentValue.indexOf(originalItem.val());
