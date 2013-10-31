@@ -87,7 +87,7 @@
                 self._list.children().each(function (index) {
                     var text = $(this).text().toLowerCase();
 
-                    if (text.search('^' + searchQuery) != -1) {
+                    if (text.search(searchQuery) != -1) {
                         $(this).css('display', 'block');
                     } else {
                         $(this).css('display', 'none');
@@ -132,15 +132,15 @@
                 .addClass(self.LIST_ITEM_CLASS)
                 .appendTo(self._list)
                 .text($(this).text())
-                .click(function () {
-                    self.onItemClick($(this))
+                .click(function (e) {
+                    self.onItemClick($(this), e)
                 });
 
             if ($(this).attr('disabled'))
                 item.attr('disabled', '');
 
             if ($(this).attr('selected'))
-                self.onItemClick(item);
+                self.onItemClick(item, e);
         });
     }
 
@@ -159,7 +159,7 @@
         if (this._settings['searchbar'])
             listHeight -= this._searchbarWrapper.outerHeight(true);
 
-        this._list.height(listHeight);
+        this._list.height(listHeight-50);
     }
 
 
@@ -244,27 +244,57 @@
      * @this {MultiSelectListbox}
      * @param {object} item a DOM object
      */
-    MultiSelectListbox.prototype.onItemClick = function (item) {
+    MultiSelectListbox.prototype.onItemClick = function (item, e) {
         if (item.attr('disabled')) return;
 
+		var lastIndex = item.parent().data('lastIndex');
+		var thisIndex = item.index();
+		item.parent().data('lastIndex', thisIndex);
+		
         var parentItem = $(this._parent.children().get(item.index()));
         var parentValue = this._parent.val();
 
-        if (item.attr('selected')) {
-            item.removeAttr('selected');
-
-            var removeIndex = parentValue.indexOf(parentItem.val());
-            parentValue.splice(removeIndex, 1);
-        } else {
-            item.attr('selected', '');
-
-            if (!parentValue)
-                parentValue = [];
-            parentValue.push(parentItem.val());
-        }
-
-        this._parent.val(parentValue);
-        this._parent.trigger('change');
+		if (e.shiftKey && (lastIndex != undefined)){
+			var start=0, end=0;
+			if(thisIndex < lastIndex){
+				start = thisIndex;
+				end = lastIndex;
+			}else{
+				start = lastIndex + 1;
+				end = thisIndex+1;
+			}
+			for(var i=start;i<end;i++){
+				var thisItem = $(item.parent().find('.lbjs-item')[i]);
+				var originalItem = $(this._parent.children().get(i));
+				if(thisItem.attr('selected')){
+					thisItem.removeAttr('selected');
+					var removeIndex = parentValue.indexOf(originalItem.val());
+					parentValue.splice(removeIndex, 1);
+				}else{
+					thisItem.attr('selected', '');
+					if (!parentValue)
+		                parentValue = [];
+		            parentValue.push(originalItem.val());
+				}
+			}
+		}
+		else{
+			if (item.attr('selected')) {
+	            item.removeAttr('selected');
+	
+	            var removeIndex = parentValue.indexOf(parentItem.val());
+	            parentValue.splice(removeIndex, 1);
+	        } else {
+	            item.attr('selected', '');
+	
+	            if (!parentValue)
+	                parentValue = [];
+	            parentValue.push(parentItem.val());
+	        }    
+		}
+		this._parent.val(parentValue);
+	    this._parent.trigger('change');
+        
     }
 
 

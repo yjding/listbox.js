@@ -13,7 +13,7 @@
     border: 1px solid #CCC;
     border-radius: 5px;
     background: #FCFCFC;
-    height: 300px;
+    height: 200px;
 }
 
 .lbjs .lbjs-list {
@@ -25,6 +25,10 @@
 .lbjs .lbjs-list .lbjs-item {
     margin: 0px;
     padding: 5px;
+    user-select: none; /* CSS3 (little to no support) */
+    -ms-user-select: none; /* IE 10+ */
+    -moz-user-select: none; /* Gecko (Firefox) */
+    -webkit-user-select: none; /* Webkit (Safari, Chrome) */
 }
 
 .lbjs .lbjs-list .lbjs-item:not([disabled]) {
