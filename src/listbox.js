@@ -140,7 +140,8 @@
                 item.attr('disabled', '');
 
             if ($(this).attr('selected'))
-                self.onItemClick(item, e);
+                //self.onItemClick(item, e);
+                item.attr('selected', '');
         });
     }
 
